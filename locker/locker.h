@@ -10,6 +10,11 @@ class sem {
     sem(int value = 0) : count(value) {
     }
 
+    void reset(int value = 0){
+        std::unique_lock<std::mutex> lock(m_mutex);
+        count = value;
+    }
+    
     void post(){
         std::unique_lock<std::mutex> lock(m_mutex);
         count ++;
