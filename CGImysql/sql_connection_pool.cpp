@@ -34,12 +34,14 @@ void sql_connection_pool::init(std::string url, std::string user, std::string pa
         con = mysql_init(con);
         if (con == nullptr)
         {
+            Log::get_instance().write_log(3, "MySQL Error: mysql_init failed\n");
             exit(-1);
         }
         con = mysql_real_connect(con, m_url.c_str(), m_user.c_str(), m_passwd.c_str(), m_dbname.c_str(), m_port, nullptr, 0);
 
         if (con == nullptr)
         {
+            Log::get_instance().write_log(3, "MySQL Error: %s\n", mysql_error(con));
             exit(-1);
         }
         connList.push_back(con);
