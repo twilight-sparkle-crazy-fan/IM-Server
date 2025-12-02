@@ -1,6 +1,6 @@
 #ifndef HTTPCONNECTION_H
 #define HTTPCONNECTION_H
-#endif
+
 
 #include <string>
 #include <sys/socket.h>
@@ -17,6 +17,7 @@
 #include <sys/uio.h>
 #include "../log/log.h"
 #include "../CGImysql/sql_connection_pool.h"
+#include "../timer/lst_timer.h"
 
 class httpConn
 {
@@ -163,3 +164,5 @@ private:
     struct iovec m_iv[2];   // 系统调用 writev 的专属参数
     int m_ivCount;
 };
+
+#endif

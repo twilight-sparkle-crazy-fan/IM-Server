@@ -54,11 +54,11 @@ threadpool<T>::~threadpool(){
 
 template <typename T>
 bool threadpool<T>::append(T *request, int state){ 
-    std::unique_lock<std::mutex> lock(m_mutex_queue);
+    std::lock_guard<std::mutex> lock(m_mutex_queue);
     if (m_workqueue.size() >= m_max_requests){
         return false;
     }
-    request->m_state = state;
+    request->m_state = (state == 0)? T::IO_state::READ:T::IO_state::WRITE;
     //设置状态 0：读操作 1：写操作
     m_workqueue.push_back(request);
     lock.unlock();
@@ -101,17 +101,17 @@ void threadpool<T>::run(){
         }
         if (1 == m_actor_model)
         {
-            if (0 == request->m_state)
+            if (T::IO_state::READ == request->m_state)
             {
                 if (request->read_once())
                 {
-                    request->improv = 1;
+                    request->m_processing_finished = 1;
                     connectionRAII mysqlcon(&request->mysql, m_connPool);
                     request->process();
                 }
                 else
                 {
-                    request->improv = 1;
+                    request->m_processing_finished = 1;
                     request->timer_flag = 1;
                 }
             }
@@ -119,11 +119,11 @@ void threadpool<T>::run(){
             {
                 if (request->write())
                 {
-                    request->improv = 1;
+                    request->m_processing_finished = 1;
                 }
                 else
                 {
-                    request->improv = 1;
+                    request->m_processing_finished = 1;
                     request->timer_flag = 1;
                 }
             }
