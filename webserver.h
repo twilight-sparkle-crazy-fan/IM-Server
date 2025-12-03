@@ -7,6 +7,8 @@
 #include <string>
 #include <sys/socket.h>
 #include <sys/epoll.h>
+#include <memory>
+#include <sys/signal.h>
 
 #include "./threadpool/threadpool.h"
 #include "./httpconn/httpconn.h"
@@ -26,6 +28,7 @@ class webserver {
     void threadpool_init ();
     void sql_pool_init ();
     void log_write_init ();
+    void trigger_mode ();
     void eventListen ();
     void eventLoop ();
     void timer (int connfd,struct sockaddr_in client_address);
@@ -39,14 +42,14 @@ class webserver {
 
     public:
     int m_port;  // 端口号
-    char *m_root;
+    std::string m_root;
     int m_closeLog;
     int m_logWriteType;
     int m_actorModel;
 
     int m_pipefd[2];
     int m_epollfd;
-    httpConn *users;
+    std::unique_ptr<httpConn[]> users;
 
 
     //数据库相关
@@ -57,7 +60,7 @@ class webserver {
     int m_sqlNum;
 
     //线程池相关
-    threadpool<httpConn> *m_threadpool;
+    std::unique_ptr<threadpool<httpConn>> m_threadpool;
     int m_threadNum;
 
     //epoll相关
@@ -70,7 +73,8 @@ class webserver {
     int m_connectTrigmode; // 连接触发模式
 
     //定时器相关
-    client_data *users_timer;
+    //client_data *users_timer;
+    std::unique_ptr<client_data[]> m_timer;
     Utils utils;
  };
 
