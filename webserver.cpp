@@ -75,11 +75,11 @@ void webserver::log_write_init()
     {
         if (1 == m_logWriteType)
         {
-            Log::get_instance().init("./ServerLog", m_closeLog, m_logWriteType, 8000000);
+            Log::get_instance().init("./ServerLog", m_closeLog, 2000, 800000,800);
         }
         else
         {
-            Log::get_instance().init("./ServerLog", m_closeLog, m_logWriteType, 8000000);
+            Log::get_instance().init("./ServerLog", m_closeLog, 2000, 800000,0);
         }
     }
 }
@@ -199,7 +199,10 @@ void webserver::deal_timer(util_timer *timer, int sockfd)
 {
     timer->cb_func();
     if (timer)
+    {
         utils.m_time_lst.del_timer(timer);
+        m_timer[sockfd].timer.reset();
+    }
     // LOG
 }
 
@@ -310,7 +313,10 @@ void webserver::dealwithread(int sockfd)
                     deal_timer(timer, sockfd);
                     users[sockfd].timer_flag = 0;
                     // 读取失败的逻辑
+                    
                 }
+                users[sockfd].m_processing_finished = false;
+                break;
             }
         }
     }
@@ -407,30 +413,36 @@ void webserver::eventLoop()
                 if (flag == false)
                     continue;
             }
-            else if (events[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR)) {
+            else if (events[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR))
+            {
                 //(对方挂断 OR 线路挂起 OR 发生错误) 直接关闭连接
                 util_timer *timer = m_timer[sockfd].timer.get();
                 deal_timer(timer, sockfd);
             }
             // 处理信号
-            else if (sockfd == m_pipefd[0] && events[i].events & EPOLLIN){
+            else if (sockfd == m_pipefd[0] && events[i].events & EPOLLIN)
+            {
                 bool flag = dealwithsignal(timeout, stop_server);
-                if (flag == false){
-                    //LOG
+                if (flag == false)
+                {
+                    // LOG
                 }
             }
 
-            else if (events[i].events & EPOLLIN){
+            else if (events[i].events & EPOLLIN)
+            {
                 dealwithread(sockfd);
             }
-            else if (events[i].events & EPOLLOUT){
+            else if (events[i].events & EPOLLOUT)
+            {
                 dealwithwrite(sockfd);
             }
         }
-        if (timeout) {
+        if (timeout)
+        {
             utils.timer_handler();
             // LOG
             timeout = false;
-        }     
+        }
     }
 }

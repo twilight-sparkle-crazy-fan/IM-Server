@@ -54,7 +54,7 @@ threadpool<T>::~threadpool(){
 
 template <typename T>
 bool threadpool<T>::append(T *request, int state){ 
-    std::lock_guard<std::mutex> lock(m_mutex_queue);
+    std::unique_lock<std::mutex> lock(m_mutex_queue);
     if (m_workqueue.size() >= m_max_requests){
         return false;
     }
