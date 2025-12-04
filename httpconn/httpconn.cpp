@@ -578,37 +578,37 @@ bool httpConn::write()
                 return false;
             }
             // 资源暂不可用，返回 true，继续发送  其他就退出
+        }
 
-            bytes_have_send += temp;
-            bytes_to_send -= temp;
+        bytes_have_send += temp;
+        bytes_to_send -= temp;
 
-            if (bytes_have_send >= m_iv[0].iov_len)
+        if (bytes_have_send >= m_iv[0].iov_len)
+        {
+            m_iv[0].iov_len = 0;
+            m_iv[1].iov_base = m_fileAddress + (bytes_have_send - m_writeIdx);
+            // 整个文件的新起点 = 文件首地址 + (总发送量 - 头部长度)
+            m_iv[1].iov_len = bytes_to_send;
+        }
+        else
+        {
+            m_iv[0].iov_base = m_writeBuf + bytes_have_send;
+            m_iv[0].iov_len = m_iv[0].iov_len - bytes_have_send;
+        }
+
+        if (bytes_to_send <= 0)
+        {
+            unmap();
+            modfd(m_epollfd, m_sockfd, EPOLLIN, m_trigMode);
+
+            if (m_linger)
             {
-                m_iv[0].iov_len = 0;
-                m_iv[1].iov_base = m_fileAddress + (bytes_have_send - m_writeIdx);
-                // 整个文件的新起点 = 文件首地址 + (总发送量 - 头部长度)
-                m_iv[1].iov_len = bytes_to_send;
+                init();
+                return true;
             }
             else
             {
-                m_iv[0].iov_base = m_writeBuf + bytes_have_send;
-                m_iv[0].iov_len = m_iv[0].iov_len - bytes_have_send;
-            }
-
-            if (bytes_to_send <= 0)
-            {
-                unmap();
-                modfd(m_epollfd, m_sockfd, EPOLLIN, m_trigMode);
-
-                if (m_linger)
-                {
-                    init();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
         }
     }

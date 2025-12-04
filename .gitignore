@@ -2,7 +2,6 @@
 *.o
 *.obj
 *.d
-*.txt
 *.gch
 
 # 可执行文件 (假设你的程序叫 server)

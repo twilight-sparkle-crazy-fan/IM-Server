@@ -201,7 +201,7 @@ void webserver::deal_timer(util_timer *timer, int sockfd)
     if (timer)
     {
         utils.m_time_lst.del_timer(timer);
-        m_timer[sockfd].timer.reset();
+        //m_timer[sockfd].timer.reset();
     }
     // LOG
 }
