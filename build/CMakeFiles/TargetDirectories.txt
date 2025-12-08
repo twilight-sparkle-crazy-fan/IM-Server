@@ -1,3 +1,0 @@
-/home/rarity/TinywebserverC11/build/CMakeFiles/rebuild_cache.dir
-/home/rarity/TinywebserverC11/build/CMakeFiles/edit_cache.dir
-/home/rarity/TinywebserverC11/build/CMakeFiles/server.dir
