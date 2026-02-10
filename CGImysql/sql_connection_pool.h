@@ -6,7 +6,6 @@
 #include <cstring>
 #include <mutex>
 #include <list>
-#include "../locker/locker.h"
 #include "../log/log.h"
 
 class sql_connection_pool{

@@ -23,3 +23,7 @@ Thumbs.db
 log/server_log
 ServerLog
 log/log.h
+
+# 测试
+test
+*.txt

@@ -61,6 +61,14 @@ public:
         return str;
     }
 
+    std::string retrieveAsString(int32_t len)
+    {
+        assert(len <= readableBytes());
+        std::string str(peek(), len);
+        retrieve(len);
+        return str;
+    }
+
 public:
     // 字节序转换组
     void appendInt32(int32_t x)
@@ -84,13 +92,13 @@ public:
         return ntohl(be32); // 网络序 → 主机序
     }
 
-public:
+public: 
     //扩容与空间回收组
     void append(const std::string &str);
     void append(const char *data, size_t len);
     void ensureWritable(size_t len);
-    char *beginWrite() { return begin() + writePos; }
-    const char *beginWrite() const { return begin() + writePos; }
+    char *beginWrite();
+    const char *beginWrite() const;
 
 public:
     // 读写文件描述符

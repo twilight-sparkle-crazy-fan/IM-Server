@@ -76,3 +76,4 @@ ssize_t Buffer::readFd(int fd, int *err)
 
     return n;
 }
+
