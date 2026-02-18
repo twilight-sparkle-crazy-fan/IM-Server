@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <iostream>
 #include <sys/epoll.h>
+#include "usermanager.h"
 
 std::function<void(int, uint32_t)> ChatSession::ModEpollCallback = nullptr;
 
@@ -80,7 +81,9 @@ void ChatSession::close()
         socketFd = -1;
     }
 
-    // TODO: 从全局 UserManager 中移除该用户
+    if (isLogin) {
+        UserManager::getInstance().removeSession(userId);
+    }
 }
 
 // 发送接口
@@ -187,14 +190,20 @@ void ChatSession::initHandlers()
 // 细分业务组
 void ChatSession::handleLogin(const json &message)
 {
-    // TODO: 登录处理
-    isLogin = true;
-    std::cout << "Login success! OK" << std::endl;
+    if (message.contains("id") && message["id"].is_number_integer()) {
+        userId = message["id"];
+        isLogin = true;
+        UserManager::getInstance().addSession(userId, this);
+        std::cout << "User " << userId << " login success!" << std::endl;
+    }
 }
 
 void ChatSession::handleChat(const json &message)
 {
-    // TODO: 聊天处理
+    if (message.contains("to") && message["to"].is_number_integer()) {
+        int toId = message["to"];
+        UserManager::getInstance().sendTo(toId, message);
+    }
 }
 
 void ChatSession::handleHeartbeat(const json &message)

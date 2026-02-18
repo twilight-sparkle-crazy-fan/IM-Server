@@ -18,13 +18,6 @@ public:
     explicit Threadpool(size_t threads_number);
     ~Threadpool();
 
-    /*
-    template<class F, class... Args>
-    auto enqueue(F&& f, Args&&... args)
-        -> std::future<typename std::result_of<F(Args...)>::type>;
-    c++11 写法
-    */
-
     template <class F, class... Args>
     auto enqueue(F &&f, Args &&...args)
         -> std::future<decltype(std::invoke(std::forward<F>(f), std::forward<Args>(args)...))>;

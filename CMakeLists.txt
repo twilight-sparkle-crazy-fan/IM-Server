@@ -24,6 +24,7 @@ set(SOURCES
     main.cpp
     chat/buffer.cpp
     chat/chat.cpp
+    chat/usermanager.cpp
     # config.cpp
     # webserver.cpp
 )
