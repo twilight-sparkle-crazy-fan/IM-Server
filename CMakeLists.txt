@@ -22,6 +22,7 @@ include_directories(
 # 按照你的要求，只包含 buffer 的 cpp 和 main.cpp
 set(SOURCES
     main.cpp
+    chatserver.cpp
     chat/buffer.cpp
     chat/chat.cpp
     chat/usermanager.cpp

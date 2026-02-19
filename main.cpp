@@ -1,3 +1,4 @@
+//目前main只用于做单元测试
 #include "chat/chat.h"
 #include <iostream>
 #include <sys/socket.h>

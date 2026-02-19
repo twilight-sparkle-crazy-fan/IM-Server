@@ -8,6 +8,7 @@
 #include "chat.h"
 #include "nlohmann/json.hpp"
 #include <vector>
+#include <memory>
 
 using json = nlohmann::json;
 
@@ -23,7 +24,7 @@ public:
     UserManager& operator=(const UserManager&) = delete;
 
     // 1. 在线映射管理 & 2. 线程安全的注册与注销
-    void addSession(int userId, ChatSession* session);
+    void addSession(int userId, std::shared_ptr<ChatSession> session);
     void removeSession(int userId);
 
     // 3. 消息转发中转
@@ -40,7 +41,7 @@ private:
     UserManager() = default;
     ~UserManager() = default;
 
-    std::unordered_map<int, ChatSession*> m_users; // UserID -> ChatSession*
+    std::unordered_map<int, std::shared_ptr<ChatSession>> m_users; // UserID -> ChatSession 
     mutable std::shared_mutex m_mutex; // 读写锁
 };
 
