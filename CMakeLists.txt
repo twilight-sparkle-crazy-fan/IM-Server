@@ -16,6 +16,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/chat
     ${CMAKE_CURRENT_SOURCE_DIR}/threadpool
+    ${CMAKE_CURRENT_SOURCE_DIR}/mysql
 )
 
 # --- 2. 收集源文件 (Source files) ---
@@ -26,6 +27,7 @@ set(SOURCES
     chat/buffer.cpp
     chat/chat.cpp
     chat/usermanager.cpp
+    mysql/sqlConnectionPool.cpp
     # config.cpp
     # webserver.cpp
 )
@@ -35,7 +37,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 # --- 4. 链接库 (如果是 Linux 上的多线程项目，通常需要 pthread) ---
 find_package(Threads REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads mysqlclient)
 
 # (可选) 设置输出目录为 build 文件夹之外
 # set(EXECUTABLE_OUTPUT_PATH ${PROJECT_DIR}/bin)

@@ -8,11 +8,14 @@
 #include <unordered_map>
 #include <exception>
 #include <functional>
+#include <memory>
 #include <unistd.h>
+#include <mutex>
+#include <string>
 
 using json = nlohmann::json;
 
-class ChatSession {
+class ChatSession : public std::enable_shared_from_this<ChatSession> {
 public:
     ChatSession(int fd);
     ~ChatSession();
@@ -47,12 +50,20 @@ private:
 
     //细分业务组
     void handleLogin(const json& msg);
+    void handleRegister(const json& msg);
     void handleChat(const json& msg);
     void handleHeartbeat(const json& msg);
+    void handleAddFriend(const json& msg);
+    void handleGetFriends(const json& msg);
+
+    // 离线消息辅助
+    void pullOfflineMessages();
+    void storeOfflineMessage(int toId, int fromId, const std::string& content);
 
 private:
     int socketFd;
     int userId;
+    std::string username_; // 登录后记录用户名
     bool isLogin;
     std::atomic_bool isClosed;
     time_t lastActiveTime;
@@ -60,6 +71,7 @@ private:
     
     Buffer inputBuffer;
     Buffer outputBuffer;
+    std::mutex bufferMutex_; // 保护 Buffer 相关操作
     std::unordered_map<std::string, std::function<void(const json&)>> handlers;
 };
 

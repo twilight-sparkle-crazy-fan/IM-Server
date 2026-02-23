@@ -16,7 +16,7 @@ static constexpr int TIMER_INTERVAL    = 1;    // 定时器扫描间隔（秒）
 
 class ChatServer {
 public:
-    ChatServer(int port, int threadNum = 4);
+    ChatServer(int port, int threadNum = 8);
     ~ChatServer();
 
     // 启动主事件循环（阻塞）
@@ -51,6 +51,7 @@ private:
     // fd → ChatSession 映射表（需 sessionsMutex_ 保护）
     std::unordered_map<int, std::shared_ptr<ChatSession>> sessions_;
     std::mutex sessionsMutex_;
+    
 
     std::unique_ptr<Threadpool> threadpool_;
     std::thread timerThread_;
